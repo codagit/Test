@@ -1,681 +1,885 @@
 {
-  "log": {
-    "loglevel": "warning"
-  },
   "dns": {
-    "hosts": {
-      "dns.google": "8.8.8.8",
-      "proxy.example.com": "127.0.0.1"
-    },
+    "final": "local-dns",
+    "rules": [
+      {
+        "clash_mode": "Global",
+        "server": "proxy-dns",
+        "source_ip_cidr": [
+          "172.19.0.0/30"
+        ]
+      },
+      {
+        "server": "proxy-dns",
+        "source_ip_cidr": [
+          "172.19.0.0/30"
+        ]
+      },
+      {
+        "clash_mode": "Direct",
+        "server": "direct-dns"
+      },
+      {
+        "rule_set": [
+          "geosite-ir"
+        ],
+        "server": "direct-dns"
+      },
+      {
+        "rule_set": [
+          "geosite-category-ads-all",
+          "geosite-malware",
+          "geosite-phishing",
+          "geosite-cryptominers"
+        ],
+        "server": "block"
+      }
+    ],
     "servers": [
       {
-        "address": "1.1.1.1",
-        "skipFallback": true,
-        "domains": [
-          "domain:googleapis.cn",
-          "domain:gstatic.com"
-        ]
+        "address": "tls://208.67.222.123",
+        "address_resolver": "local-dns",
+        "detour": "proxy",
+        "tag": "proxy-dns"
       },
       {
-        "address": "223.5.5.5",
-        "skipFallback": true,
-        "domains": [
-          "geosite:cn"
-        ],
-        "expectIPs": [
-          "geoip:cn"
-        ]
+        "address": "local",
+        "detour": "direct",
+        "tag": "local-dns"
       },
-      "1.1.1.1",
-      "8.8.8.8",
-      "https://dns.google/dns-query"
-    ]
+      {
+        "address": "rcode://success",
+        "tag": "block"
+      },
+      {
+        "address": "local",
+        "detour": "direct",
+        "tag": "direct-dns"
+      }
+    ],
+    "strategy": "prefer_ipv4"
   },
   "inbounds": [
     {
-      "tag": "socks",
-      "port": 10808,
-      "listen": "127.0.0.1",
-      "protocol": "mixed",
-      "sniffing": {
-        "enabled": true,
-        "destOverride": [
-          "http",
-          "tls"
-        ],
-        "routeOnly": false
+      "address": [
+        "172.19.0.1/30",
+        "fdfe:dcba:9876::1/126"
+      ],
+      "auto_route": true,
+      "endpoint_independent_nat": false,
+      "mtu": 9000,
+      "platform": {
+        "http_proxy": {
+          "enabled": true,
+          "server": "127.0.0.1",
+          "server_port": 2080
+        }
       },
-      "settings": {
-        "auth": "noauth",
-        "udp": true,
-        "allowTransparent": false
-      }
+      "sniff": true,
+      "stack": "system",
+      "strict_route": false,
+      "type": "tun"
+    },
+    {
+      "listen": "127.0.0.1",
+      "listen_port": 2080,
+      "sniff": true,
+      "type": "mixed",
+      "users": []
     }
   ],
   "outbounds": [
     {
-      "tag": "proxy-21",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "h.cm2.xiaomi-api.xyz",
-            "method": "chacha20-ietf-poly1305",
-            "ota": false,
-            "password": "feafc2ef-d5fd-4f6d-803b-fad4a5cc1f0e",
-            "port": 19852,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
+      "tag": "proxy",
+      "type": "selector",
+      "outbounds": [
+        "auto",
+        "vless-M VPN-1",
+        "vless-M VPN-2",
+        "vless-M VPN-3",
+        "vless-M VPN-4",
+        "vless-M VPN-5",
+        "vless-M VPN-6",
+        "vless-M VPN-7",
+        "vless-M VPN-8",
+        "vless-M VPN-9",
+        "vless-M VPN-10",
+        "vless-M VPN-11",
+        "vless-M VPN-12",
+        "vless-M VPN-13",
+        "vless-M VPN-14",
+        "vmess-M VPN-1",
+        "vless-M VPN-15",
+        "vless-M VPN-16",
+        "hysteria2-M VPN-1",
+        "hysteria2-M VPN-2",
+        "ss-M VPN-1",
+        "ss-M VPN-2",
+        "ss-M VPN-3",
+        "ss-M VPN-4",
+        "ss-M VPN-5",
+        "ss-M VPN-6",
+        "ss-M VPN-7",
+        "ss-M VPN-8",
+        "ss-M VPN-9",
+        "ss-M VPN-10",
+        "ss-M VPN-11",
+        "ss-M VPN-12",
+        "ss-M VPN-13",
+        "ss-M VPN-14",
+        "ss-M VPN-15",
+        "ss-M VPN-16",
+        "ss-M VPN-17",
+        "ss-M VPN-18",
+        "ss-M VPN-19",
+        "ss-M VPN-20",
+        "ss-M VPN-21",
+        "ss-M VPN-22",
+        "ss-M VPN-23",
+        "ss-M VPN-24",
+        "ss-M VPN-25",
+        "ss-M VPN-26",
+        "ss-M VPN-27",
+        "ss-M VPN-28",
+        "ss-M VPN-29",
+        "direct"
+      ]
     },
     {
-      "tag": "proxy-20",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "ti3hyra4.slashdevslashnetslashtun.net",
-            "method": "aes-256-gcm",
-            "ota": false,
-            "password": "7HJO64Y69YP2L0KM",
-            "port": 15013,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-19",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "103.103.245.158",
-            "method": "aes-256-gcm",
-            "ota": false,
-            "password": "9bfdde71b4c0",
-            "port": 636,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-18",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "45.154.206.192",
-            "method": "chacha20-ietf-poly1305",
-            "ota": false,
-            "password": "f8f7aCzcPKbsF8p3",
-            "port": 990,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-17",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "137.220.191.40",
-            "method": "aes-256-gcm",
-            "ota": false,
-            "password": "823e135ed103",
-            "port": 636,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-16",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "hk007.dogsvip.site",
-            "method": "aes-256-gcm",
-            "ota": false,
-            "password": "323537df-dbdf-4f7e-a4c7-6c290d8e53ff",
-            "port": 16007,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-15",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "ti3hyra4.slashdevslashnetslashtun.net",
-            "method": "aes-256-gcm",
-            "ota": false,
-            "password": "CFH2Q2LTQ1LC9CRD",
-            "port": 18011,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-14",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "185.242.86.156",
-            "method": "chacha20-ietf-poly1305",
-            "ota": false,
-            "password": "36ZCHeabUSfKjfQEvJ4HDV",
-            "port": 54170,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-13",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "h.cm2.xiaomi-api.xyz",
-            "method": "chacha20-ietf-poly1305",
-            "ota": false,
-            "password": "feafc2ef-d5fd-4f6d-803b-fad4a5cc1f0e",
-            "port": 19852,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-12",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "ti3hyra4.slashdevslashnetslashtun.net",
-            "method": "aes-256-gcm",
-            "ota": false,
-            "password": "CFH2Q2LTQ1LC9CRD",
-            "port": 18011,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-11",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "137.220.191.40",
-            "method": "aes-256-gcm",
-            "ota": false,
-            "password": "823e135ed103",
-            "port": 636,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-10",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "3ce8ee8.b5.gladns.com",
-            "method": "chacha20-ietf-poly1305",
-            "ota": false,
-            "password": "t0srmdxrm3xyjnvqz9ewlxb2myq7rjuv",
-            "port": 2377,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-9",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "ti3hyra4.slashdevslashnetslashtun.net",
-            "method": "aes-256-gcm",
-            "ota": false,
-            "password": "7HJO64Y69YP2L0KM",
-            "port": 15013,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-8",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "103.103.245.158",
-            "method": "aes-256-gcm",
-            "ota": false,
-            "password": "9bfdde71b4c0",
-            "port": 636,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-7",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "hk007.dogsvip.site",
-            "method": "aes-256-gcm",
-            "ota": false,
-            "password": "323537df-dbdf-4f7e-a4c7-6c290d8e53ff",
-            "port": 16007,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-6",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "213.109.147.242",
-            "method": "chacha20-ietf-poly1305",
-            "ota": false,
-            "password": "VpKABcOpNNA0l5G2AVOmw8",
-            "port": 62685,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-5",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "45.144.54.33",
-            "method": "chacha20-ietf-poly1305",
-            "ota": false,
-            "password": "LiHQX9cDbdooBHlIg0eiqQ",
-            "port": 34803,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-4",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "45.150.32.13",
-            "method": "chacha20-ietf-poly1305",
-            "ota": false,
-            "password": "DKyRdoqQIebdKZVYs5GzW8",
-            "port": 14628,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-3",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "172.233.128.126",
-            "method": "chacha20-ietf-poly1305",
-            "ota": false,
-            "password": "oXGp1+ihlfKg826H",
-            "port": 1866,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-2",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "45.87.175.28",
-            "method": "chacha20-ietf-poly1305",
-            "ota": false,
-            "password": "oZIoA69Q8yhcQV8ka3Pa3A",
-            "port": 8080,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
-    },
-    {
-      "tag": "proxy-1",
-      "protocol": "shadowsocks",
-      "settings": {
-        "servers": [
-          {
-            "address": "204.136.10.115",
-            "method": "chacha20-ietf-poly1305",
-            "ota": false,
-            "password": "oXGp1+ihlfKg826H",
-            "port": 1866,
-            "level": 1
-          }
-        ]
-      },
-      "streamSettings": {
-        "network": "tcp"
-      },
-      "mux": {
-        "enabled": false,
-        "concurrency": -1
-      }
+      "tag": "auto",
+      "type": "urltest",
+      "outbounds": [
+        "vless-M VPN-1",
+        "vless-M VPN-2",
+        "vless-M VPN-3",
+        "vless-M VPN-4",
+        "vless-M VPN-5",
+        "vless-M VPN-6",
+        "vless-M VPN-7",
+        "vless-M VPN-8",
+        "vless-M VPN-9",
+        "vless-M VPN-10",
+        "vless-M VPN-11",
+        "vless-M VPN-12",
+        "vless-M VPN-13",
+        "vless-M VPN-14",
+        "vmess-M VPN-1",
+        "vless-M VPN-15",
+        "vless-M VPN-16",
+        "hysteria2-M VPN-1",
+        "hysteria2-M VPN-2",
+        "ss-M VPN-1",
+        "ss-M VPN-2",
+        "ss-M VPN-3",
+        "ss-M VPN-4",
+        "ss-M VPN-5",
+        "ss-M VPN-6",
+        "ss-M VPN-7",
+        "ss-M VPN-8",
+        "ss-M VPN-9",
+        "ss-M VPN-10",
+        "ss-M VPN-11",
+        "ss-M VPN-12",
+        "ss-M VPN-13",
+        "ss-M VPN-14",
+        "ss-M VPN-15",
+        "ss-M VPN-16",
+        "ss-M VPN-17",
+        "ss-M VPN-18",
+        "ss-M VPN-19",
+        "ss-M VPN-20",
+        "ss-M VPN-21",
+        "ss-M VPN-22",
+        "ss-M VPN-23",
+        "ss-M VPN-24",
+        "ss-M VPN-25",
+        "ss-M VPN-26",
+        "ss-M VPN-27",
+        "ss-M VPN-28",
+        "ss-M VPN-29"
+      ],
+      "url": "http://www.gstatic.com/generate_204",
+      "interval": "10m",
+      "tolerance": 50
     },
     {
       "tag": "direct",
-      "protocol": "freedom"
+      "type": "direct"
     },
     {
-      "tag": "block",
-      "protocol": "blackhole"
+      "type": "vless",
+      "tag": "vless-M VPN-1",
+      "server": "43.156.217.68",
+      "server_port": 41283,
+      "uuid": "4839e0b9-b275-47ea-81ab-9bfd38bbe7af",
+      "flow": "",
+      "transport": {},
+      "tls": {
+        "enabled": true,
+        "server_name": "43.156.217.68",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-2",
+      "server": "5.10.214.15",
+      "server_port": 8880,
+      "uuid": "53fa8faf-ba4b-4322-9c69-a3e5b1555049",
+      "flow": "",
+      "transport": {
+        "path": "/TelegramU0001F1E8U0001F1F3",
+        "headers": {
+          "Host": "reedfree8mahsang2.redorg.ir"
+        },
+        "type": "ws"
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "5.10.214.15",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-3",
+      "server": "5.10.214.64",
+      "server_port": 8880,
+      "uuid": "53fa8faf-ba4b-4322-9c69-a3e5b1555049",
+      "flow": "",
+      "transport": {
+        "path": "/",
+        "headers": {
+          "Host": "reedfree8mahsang2.redorg.ir"
+        },
+        "type": "ws"
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "5.10.214.64",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-4",
+      "server": "5.10.214.19",
+      "server_port": 8880,
+      "uuid": "53fa8faf-ba4b-4322-9c69-a3e5b1555049",
+      "flow": "",
+      "transport": {
+        "path": "/TelegramU0001F1E8U0001F1F3",
+        "headers": {
+          "Host": "reedfree8mahsang2.redorg.ir"
+        },
+        "type": "ws"
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "5.10.214.19",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-5",
+      "server": "47.76.81.217",
+      "server_port": 38971,
+      "uuid": "633d3f6b-5f34-4ef8-b240-01667f6dd07d",
+      "flow": "",
+      "transport": {},
+      "tls": {
+        "enabled": true,
+        "server_name": "47.76.81.217",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-6",
+      "server": "62.3.12.185",
+      "server_port": 443,
+      "uuid": "75fde681-ec64-4654-86fa-30732e8e179c",
+      "flow": "",
+      "transport": {
+        "path": "/",
+        "headers": {
+          "Host": "nginx-z.pages.dev"
+        },
+        "type": "ws"
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "NGINX-Z.pages.DEV",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-7",
+      "server": "198.62.62.4",
+      "server_port": 443,
+      "uuid": "d0298536-d670-4045-bbb1-ddd5ea68683e",
+      "flow": "",
+      "transport": {
+        "path": "/azadnet-7py.pages.dev/?PROT_TYPE=vless",
+        "headers": {
+          "Host": "azadnet-7py.pages.dev"
+        },
+        "type": "ws"
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "azadnet-7py.pages.dev",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-8",
+      "server": "185.236.232.237",
+      "server_port": 1001,
+      "uuid": "c7c922da-ab54-433c-8046-1f9bf9d95c23",
+      "flow": "",
+      "transport": {},
+      "tls": {
+        "enabled": true,
+        "server_name": "telewebion.com",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-9",
+      "server": "162.159.129.11",
+      "server_port": 2053,
+      "uuid": "b1a8ceea-6601-45b5-a674-7e5b64ab6f6f",
+      "flow": "",
+      "transport": {
+        "path": "/",
+        "headers": {
+          "Host": "sub.divib.dynv6.net"
+        },
+        "type": "ws"
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "sub.divib.dynv6.net",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-10",
+      "server": "104.18.26.90",
+      "server_port": 80,
+      "uuid": "6f690965-3be3-43bb-9331-3ead6efb20aa",
+      "flow": "",
+      "transport": {
+        "path": "/",
+        "headers": {
+          "Host": "sib.sibzamini.dpdns.org"
+        },
+        "type": "ws"
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "104.18.26.90",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-11",
+      "server": "46.31.76.3",
+      "server_port": 80,
+      "uuid": "295afac4-e906-4e08-b1ce-524177c7ecb1",
+      "flow": "",
+      "transport": {},
+      "tls": {
+        "enabled": true,
+        "server_name": "journalofbigdata.springeropen.com",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-12",
+      "server": "5.10.214.254",
+      "server_port": 8880,
+      "uuid": "34c01e61-f4f3-4afb-a83b-406caf8caa33",
+      "flow": "",
+      "transport": {
+        "path": "/",
+        "headers": {
+          "Host": "yg.bantony199.top"
+        },
+        "type": "ws"
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "5.10.214.254",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-13",
+      "server": "141.193.213.11",
+      "server_port": 80,
+      "uuid": "fab7bf9c-ddb9-4563-8a04-fb01ce6c0fbf",
+      "flow": "",
+      "transport": {
+        "path": "/Telegram",
+        "headers": {
+          "Host": "cs.laoyoutiao.link"
+        },
+        "type": "ws"
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "141.193.213.11",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-14",
+      "server": "104.18.26.90",
+      "server_port": 8080,
+      "uuid": "c87e429a-5ada-47b1-b4e5-d170648a1e6e",
+      "flow": "",
+      "transport": {
+        "path": "/",
+        "headers": {
+          "Host": "h4.GraSsoRy.shop"
+        },
+        "type": "ws"
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "104.18.26.90",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vmess",
+      "tag": "vmess-M VPN-1",
+      "server": "104.18.26.90",
+      "server_port": 80,
+      "uuid": "95abfa50-f1d9-4e7d-8a7a-50c2ee9a7365",
+      "security": "auto",
+      "alter_id": 0,
+      "transport": {
+        "path": "/",
+        "headers": {
+          "Host": "h4.GraSsoRy.shop"
+        },
+        "type": "ws"
+      },
+      "tls": {
+        "enabled": false,
+        "insecure": true,
+        "server_name": "104.18.26.90"
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-15",
+      "server": "172.67.73.216",
+      "server_port": 80,
+      "uuid": "3e7912e9-1310-4c2b-80e8-21201f623cc9",
+      "flow": "",
+      "transport": {
+        "path": "/Telegram@vpnjeyTelegram@vpnjeyTelegram@vpnjey",
+        "headers": {
+          "Host": "www.speedtest.net.tax.gov.ir.aparat.com.a.2.jEy.dPdNs.org."
+        },
+        "type": "ws"
+      },
+      "tls": {
+        "enabled": true,
+        "server_name": "172.67.73.216",
+        "insecure": true
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "vless-M VPN-16",
+      "server": "116.203.29.106",
+      "server_port": 50424,
+      "uuid": "b4473fe7-6e2e-441e-8b2e-a8baec8a5172",
+      "flow": "",
+      "transport": {},
+      "tls": {
+        "enabled": true,
+        "server_name": "116.203.29.106",
+        "insecure": true
+      }
+    },
+    {
+      "type": "hysteria2",
+      "tag": "hysteria2-M VPN-1",
+      "server": "77.90.52.69",
+      "server_port": 35000,
+      "password": "%40JavidnamanIran-Javid-SHAH-KingRezaPahlavi",
+      "tls": {
+        "enabled": true,
+        "server_name": "pichondan.com",
+        "insecure": true
+      }
+    },
+    {
+      "type": "hysteria2",
+      "tag": "hysteria2-M VPN-2",
+      "server": "206.71.158.40",
+      "server_port": 35000,
+      "password": "%40JavidnamanIran-Javid-SHAH-KingRezaPahlavi",
+      "tls": {
+        "enabled": true,
+        "server_name": "pichondan.com",
+        "insecure": true
+      }
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-1",
+      "server": "103.186.154.26",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-2",
+      "server": "103.186.154.21",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-3",
+      "server": "103.186.154.22",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-4",
+      "server": "103.186.154.31",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-5",
+      "server": "103.186.154.28",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-6",
+      "server": "103.186.154.35",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-7",
+      "server": "103.186.155.25",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-8",
+      "server": "103.186.155.23",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-9",
+      "server": "103.186.154.27",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-10",
+      "server": "103.186.155.20",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-11",
+      "server": "103.186.154.18",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-12",
+      "server": "103.186.154.32",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-13",
+      "server": "103.186.155.24",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-14",
+      "server": "103.186.155.19",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-15",
+      "server": "103.186.154.25",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-16",
+      "server": "103.186.155.21",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-17",
+      "server": "103.186.154.38",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-18",
+      "server": "103.186.154.36",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-19",
+      "server": "103.186.154.19",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-20",
+      "server": "103.186.154.30",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-21",
+      "server": "103.186.154.33",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-22",
+      "server": "103.186.154.37",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-23",
+      "server": "103.186.154.24",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-24",
+      "server": "103.186.154.29",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-25",
+      "server": "4.223.106.151",
+      "server_port": 48172,
+      "method": "chacha20-ietf-poly1305",
+      "password": "51yloQC8D9w1Wae7FHtI65"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-26",
+      "server": "221.132.29.208",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-27",
+      "server": "103.186.155.22",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-28",
+      "server": "103.186.155.18",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
+    },
+    {
+      "type": "shadowsocks",
+      "tag": "ss-M VPN-29",
+      "server": "103.186.154.23",
+      "server_port": 38388,
+      "method": "aes-256-cfb",
+      "password": "Xn8jKdmDM00IeO%#$#fJAMtsEAEUOpH/YWYtYqDFnT0SV"
     }
   ],
-  "routing": {
-    "domainStrategy": "AsIs",
+  "route": {
+    "auto_detect_interface": true,
+    "final": "proxy",
     "rules": [
       {
-        "type": "field",
-        "inboundTag": [
-          "api"
+        "clash_mode": "Direct",
+        "outbound": "direct"
+      },
+      {
+        "clash_mode": "Global",
+        "outbound": "proxy"
+      },
+      {
+        "protocol": "dns",
+        "action": "hijack-dns"
+      },
+      {
+        "domain_suffix": [
+          ".ir"
         ],
-        "outboundTag": "api"
+        "outbound": "direct"
       },
       {
-        "type": "field",
-        "balancerTag": "proxy-round",
-        "domain": [
-          "domain:googleapis.cn",
-          "domain:gstatic.com"
-        ]
+        "rule_set": [
+          "geoip-ir",
+          "geosite-ir"
+        ],
+        "outbound": "direct"
       },
       {
-        "type": "field",
-        "port": "443",
-        "network": "udp",
-        "outboundTag": "block"
-      },
-      {
-        "type": "field",
-        "outboundTag": "direct",
-        "ip": [
-          "geoip:private"
-        ]
-      },
-      {
-        "type": "field",
-        "outboundTag": "direct",
-        "domain": [
-          "geosite:private"
-        ]
-      },
-      {
-        "type": "field",
-        "outboundTag": "direct",
-        "ip": [
-          "223.5.5.5",
-          "223.6.6.6",
-          "2400:3200::1",
-          "2400:3200:baba::1",
-          "119.29.29.29",
-          "1.12.12.12",
-          "120.53.53.53",
-          "2402:4e00::",
-          "2402:4e00:1::",
-          "180.76.76.76",
-          "2400:da00::6666",
-          "114.114.114.114",
-          "114.114.115.115",
-          "114.114.114.119",
-          "114.114.115.119",
-          "114.114.114.110",
-          "114.114.115.110",
-          "180.184.1.1",
-          "180.184.2.2",
-          "101.226.4.6",
-          "218.30.118.6",
-          "123.125.81.6",
-          "140.207.198.6",
-          "1.2.4.8",
-          "210.2.4.8",
-          "52.80.66.66",
-          "117.50.22.22",
-          "2400:7fc0:849e:200::4",
-          "2404:c2c0:85d8:901::4",
-          "117.50.10.10",
-          "52.80.52.52",
-          "2400:7fc0:849e:200::8",
-          "2404:c2c0:85d8:901::8",
-          "117.50.60.30",
-          "52.80.60.30"
-        ]
-      },
-      {
-        "type": "field",
-        "outboundTag": "direct",
-        "domain": [
-          "domain:alidns.com",
-          "domain:doh.pub",
-          "domain:dot.pub",
-          "domain:360.cn",
-          "domain:onedns.net"
-        ]
-      },
-      {
-        "type": "field",
-        "outboundTag": "direct",
-        "ip": [
-          "geoip:cn"
-        ]
-      },
-      {
-        "type": "field",
-        "outboundTag": "direct",
-        "domain": [
-          "geosite:cn"
-        ]
-      },
-      {
-        "type": "field",
-        "network": "tcp,udp",
-        "balancerTag": "proxy-round"
+        "rule_set": [
+          "geosite-category-ads-all",
+          "geosite-malware",
+          "geosite-phishing",
+          "geosite-cryptominers",
+          "geoip-malware",
+          "geoip-phishing"
+        ],
+        "outbound": "block"
       }
     ],
-    "balancers": [
+    "rule_set": [
       {
-        "selector": [
-          "proxy"
-        ],
-        "strategy": {
-          "type": "leastLoad"
-        },
-        "tag": "proxy-round"
+        "tag": "geosite-ir",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geosite-ir.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-category-ads-all",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geosite-category-ads-all.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-malware",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geosite-malware.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-phishing",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geosite-phishing.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-cryptominers",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geosite-cryptominers.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geoip-ir",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geoip-ir.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geoip-malware",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geoip-malware.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geoip-phishing",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/Chocolate4U/Iran-sing-box-rules/rule-set/geoip-phishing.srs",
+        "download_detour": "direct",
+        "update_interval": "1d"
       }
     ]
-  },
-  "burstObservatory": {
-    "subjectSelector": [
-      "proxy"
-    ],
-    "pingConfig": {
-      "destination": "https://www.google.com/generate_204",
-      "interval": "5m",
-      "sampling": 2,
-      "timeout": "30s"
-    }
   }
 }
